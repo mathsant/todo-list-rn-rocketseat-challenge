@@ -1,6 +1,7 @@
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Colors } from "../../constants";
 import { StyleSheet, Text, View } from "react-native";
+import { styles } from "./styles";
 
 export function EmptyList() {
   return (
@@ -17,21 +18,3 @@ export function EmptyList() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  firtsEmptyText: {
-    color: Colors.base.gray[300],
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 20,
-  },
-  secondEmptyText: {
-    color: Colors.base.gray[300],
-    textAlign: "center",
-  },
-});
