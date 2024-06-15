@@ -9,13 +9,18 @@ import {
 import { Colors } from "../../constants";
 import { Task } from "../../components/Task";
 import { EmptyList } from "../../components/EmptyList";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import IconIoni from "react-native-vector-icons/Ionicons";
 import IconAntDesign from "react-native-vector-icons/AntDesign";
 import { styles } from "./styles";
 
+export interface ITask {
+  title: string;
+  isDone: boolean;
+}
+
 export function Home() {
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<ITask[]>([]);
   const [taskName, setTaskName] = useState("");
 
   function handleTaskAdd() {
@@ -25,7 +30,13 @@ export function Home() {
         "Não é possivel criar uma task em branco, por gentileza adicione uma descrição."
       );
     }
-    setTasks((prevState) => [...prevState, taskName]);
+
+    const task: ITask = {
+      title: taskName,
+      isDone: false,
+    };
+
+    setTasks((prevState) => [...prevState, task]);
     setTaskName("");
   }
 
@@ -34,13 +45,31 @@ export function Home() {
       {
         text: "Sim",
         onPress: () =>
-          setTasks((prevState) => prevState.filter((task) => task !== name)),
+          setTasks((prevState) =>
+            prevState.filter((task) => task.title !== name)
+          ),
       },
       {
         text: "Não",
         style: "cancel",
       },
     ]);
+  }
+
+  const countCompletedTasks = useMemo(() => {
+    return tasks.filter((task) => !!task.isDone).length;
+  }, [tasks]);
+
+  function handleCompleteTask(task: ITask) {
+    const findIndex = tasks.findIndex((t) => t.title === task.title);
+    const taskList = [...tasks];
+
+    taskList[findIndex] = {
+      ...taskList[findIndex],
+      isDone: !taskList[findIndex].isDone,
+    };
+
+    setTasks(taskList);
   }
 
   return (
@@ -78,16 +107,22 @@ export function Home() {
         <View style={styles.infoCreatedTasks}>
           <Text style={styles.textSolvedTasks}>Concluídas</Text>
           <View style={styles.badgeContainer}>
-            <Text style={styles.textNumberCreatedTasks}>0</Text>
+            <Text style={styles.textNumberCreatedTasks}>
+              {countCompletedTasks}
+            </Text>
           </View>
         </View>
       </View>
 
       <FlatList
         data={tasks}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.title}
         renderItem={({ item }) => (
-          <Task title={item} isDone={false} onRemove={() => removeTask(item)} />
+          <Task
+            data={item}
+            onRemove={() => removeTask(item.title)}
+            onComplete={() => handleCompleteTask(item)}
+          />
         )}
         ListEmptyComponent={<EmptyList />}
       />

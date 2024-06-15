@@ -1,6 +1,6 @@
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Colors } from "../../constants";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { styles } from "./styles";
 
 export function EmptyList() {
